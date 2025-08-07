@@ -18,7 +18,7 @@ interface City {
 }
 
 interface SearchBarProps {
-  onSearch: (windData: WindData) => void;
+  onSearch: (windData: WindData, cityName: string, country: string) => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
@@ -64,7 +64,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       });
 
       console.log("windData", windData);
-      onSearch(windData);
+      onSearch(windData, selectedItem.city, selectedItem.country);
     } catch (error) {
       console.error("Failed to fetch wind data:", error);
     } finally {

@@ -34,21 +34,6 @@
   margin-top: 2rem;
 }
 
-.results {
-  margin-top: 1.5rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.resultText {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #333;
-  line-height: 1.4;
-}
-
 /* Tablet styles */
 @media (min-width: 768px) {
   .container {
@@ -67,9 +52,7 @@
     font-size: 1.1rem;
   }
 
-  .resultText {
-    font-size: 1rem;
-  }
+
 }
 
 /* Desktop styles */

@@ -5,14 +5,23 @@ import { useState } from "react";
 
 // Local imports
 import SearchBar from "@/app/components/SearchBar";
+import WeatherDataCard from "@/app/components/WeatherDataCard";
 import styles from "./page.module.css";
 import { WindData } from "@/services/types";
 
 export default function Home() {
   const [windData, setWindData] = useState<WindData | null>(null);
+  const [cityName, setCityName] = useState<string>("");
+  const [country, setCountry] = useState<string>("");
 
-  const handleSearchResult = (windData: WindData) => {
+  const handleSearchResult = (
+    windData: WindData,
+    cityName: string,
+    country: string
+  ) => {
     setWindData(windData);
+    setCityName(cityName);
+    setCountry(country);
   };
 
   return (
@@ -29,17 +38,11 @@ export default function Home() {
           <SearchBar onSearch={handleSearchResult} />
 
           {windData && (
-            <div className={styles.results}>
-              <p className={styles.resultText}>
-                Wind direction: {windData.windDirection}
-              </p>
-              <p className={styles.resultText}>
-                Wind speed: {windData.windSpeed}
-              </p>
-              <p className={styles.resultText}>
-                Timestamp: {new Date(windData.timestamp).toLocaleString()}
-              </p>
-            </div>
+            <WeatherDataCard
+              windData={windData}
+              cityName={cityName}
+              country={country}
+            />
           )}
         </div>
       </main>

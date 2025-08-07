@@ -10,7 +10,7 @@ import "@testing-library/jest-dom";
 import SearchBar from "./index";
 import { getWindData } from "../../../services/wind-service";
 
-jest.mock("../services/wind-service");
+jest.mock("../../../services/wind-service");
 const mockGetWindData = getWindData as jest.MockedFunction<typeof getWindData>;
 
 global.fetch = jest.fn();
@@ -43,7 +43,7 @@ describe("SearchBar", () => {
     },
   ];
 
-  const mockOnSearch = jest.fn();
+  const mockOnSearch = jest.fn((windData, cityName, country) => {});
 
   beforeEach(() => {
     jest.clearAllMocks();

@@ -1,0 +1,108 @@
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-top: 1rem;
+  border: 1px solid #e5e7eb;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+  text-align: center;
+}
+
+.locationTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+  text-align: center;
+}
+
+.dataGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dataItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.dataItem:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-weight: 500;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.value {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.875rem;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.beaufortInfo {
+  font-weight: 400;
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+/* Tablet and desktop styles */
+@media (min-width: 768px) {
+  .card {
+    padding: 2rem;
+    margin-top: 1.5rem;
+  }
+
+  .cardTitle {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .locationTitle {
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .dataGrid {
+    gap: 1rem;
+  }
+
+  .dataItem {
+    padding: 0.75rem 0;
+  }
+
+  .label,
+  .value {
+    font-size: 1rem;
+  }
+
+  .beaufortInfo {
+    font-size: 0.875rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card {
+    max-width: 500px;
+    margin: 1.5rem auto 0;
+  }
+} 

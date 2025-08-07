@@ -8,7 +8,7 @@ import "@testing-library/jest-dom";
 
 // Local imports
 import SearchBar from "./index";
-import { getWindData } from "../services/wind-service";
+import { getWindData } from "../../../services/wind-service";
 
 jest.mock("../services/wind-service");
 const mockGetWindData = getWindData as jest.MockedFunction<typeof getWindData>;
@@ -43,6 +43,8 @@ describe("SearchBar", () => {
     },
   ];
 
+  const mockOnSearch = jest.fn();
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -53,7 +55,7 @@ describe("SearchBar", () => {
 
   describe("Initial Rendering", () => {
     it("renders the search input with correct label", async () => {
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       expect(
         screen.getByRole("combobox", { name: /search for a city/i })
@@ -64,7 +66,7 @@ describe("SearchBar", () => {
     });
 
     it("renders the search button", async () => {
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const searchButton = screen.getByRole("button", {
         name: /search for wind data/i,
@@ -74,7 +76,7 @@ describe("SearchBar", () => {
     });
 
     it("does not show dropdown initially", async () => {
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       // Downshift always renders the listbox, but it's empty initially
       const listbox = screen.getByRole("listbox");
@@ -86,7 +88,7 @@ describe("SearchBar", () => {
   describe("Input Validation", () => {
     it("only allows letters and spaces in input", async () => {
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
 
@@ -97,7 +99,7 @@ describe("SearchBar", () => {
 
     it("filters out numbers and special characters", async () => {
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
 
@@ -110,7 +112,7 @@ describe("SearchBar", () => {
   describe("Dropdown Behavior", () => {
     it("shows dropdown after typing 3 characters", async () => {
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       await user.type(input, "New");
@@ -122,7 +124,7 @@ describe("SearchBar", () => {
 
     it("does not show dropdown with less than 3 characters", async () => {
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       await user.type(input, "Ne");
@@ -133,7 +135,7 @@ describe("SearchBar", () => {
 
     it("filters cities based on partial match", async () => {
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       await user.type(input, "New");
@@ -147,7 +149,7 @@ describe("SearchBar", () => {
 
     it('shows "No results found" when no matches', async () => {
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       await user.type(input, "Zzz");
@@ -159,7 +161,7 @@ describe("SearchBar", () => {
 
     it("case insensitive search", async () => {
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       await user.type(input, "london");
@@ -173,7 +175,7 @@ describe("SearchBar", () => {
   describe("City Selection", () => {
     it("allows selecting a city from dropdown", async () => {
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       await user.type(input, "London");
@@ -189,7 +191,7 @@ describe("SearchBar", () => {
 
     it("enables search button after city selection", async () => {
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       const searchButton = screen.getByRole("button", {
@@ -218,7 +220,7 @@ describe("SearchBar", () => {
         timestamp: 1234567890,
       });
 
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       await user.type(input, "London");
@@ -248,7 +250,7 @@ describe("SearchBar", () => {
         timestamp: 1234567890,
       });
 
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       await user.type(input, "Paris");
@@ -268,7 +270,7 @@ describe("SearchBar", () => {
 
     it("does not call wind service when Enter is pressed without selection", async () => {
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       await user.type(input, "Test");
@@ -282,7 +284,7 @@ describe("SearchBar", () => {
       const consoleSpy = jest.spyOn(console, "error").mockImplementation();
       mockGetWindData.mockRejectedValue(new Error("API Error"));
 
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       await user.type(input, "London");
@@ -316,7 +318,7 @@ describe("SearchBar", () => {
       });
 
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       await user.type(input, "Test");
@@ -330,7 +332,7 @@ describe("SearchBar", () => {
       const consoleSpy = jest.spyOn(console, "error").mockImplementation();
       (fetch as jest.Mock).mockRejectedValue(new Error("Fetch failed"));
 
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       await waitFor(() => {
         expect(consoleSpy).toHaveBeenCalledWith(
@@ -355,7 +357,7 @@ describe("SearchBar", () => {
       });
 
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       await user.type(input, "City");
@@ -368,7 +370,7 @@ describe("SearchBar", () => {
 
     it("handles rapid typing without errors", async () => {
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
 
@@ -388,7 +390,7 @@ describe("SearchBar", () => {
 
   describe("Accessibility", () => {
     it("has proper ARIA labels", () => {
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       expect(
         screen.getByRole("combobox", { name: /search for a city/i })
@@ -400,7 +402,7 @@ describe("SearchBar", () => {
 
     it("supports keyboard navigation", async () => {
       const user = userEvent.setup();
-      render(<SearchBar />);
+      render(<SearchBar onSearch={mockOnSearch} />);
 
       const input = screen.getByRole("combobox");
       await user.type(input, "London");

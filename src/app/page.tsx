@@ -6,6 +6,7 @@ import { useState } from "react";
 // Local imports
 import SearchBar from "@/app/components/SearchBar";
 import WeatherDataCard from "@/app/components/WeatherDataCard";
+import Loading from "@/app/components/Loading";
 import styles from "./page.module.css";
 import { WindData } from "@/services/types";
 
@@ -13,6 +14,7 @@ export default function Home() {
   const [windData, setWindData] = useState<WindData | null>(null);
   const [cityName, setCityName] = useState<string>("");
   const [country, setCountry] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSearchResult = (
     windData: WindData,
@@ -22,6 +24,10 @@ export default function Home() {
     setWindData(windData);
     setCityName(cityName);
     setCountry(country);
+  };
+
+  const handleLoadingChange = (loading: boolean) => {
+    setIsLoading(loading);
   };
 
   return (
@@ -35,9 +41,18 @@ export default function Home() {
         </p>
 
         <div className={styles.searchSection}>
-          <SearchBar onSearch={handleSearchResult} />
+          <SearchBar
+            onSearch={handleSearchResult}
+            onLoadingChange={handleLoadingChange}
+          />
 
-          {windData && (
+          {isLoading && (
+            <div className={styles.loadingContainer}>
+              <Loading size="large" />
+            </div>
+          )}
+
+          {windData && !isLoading && (
             <WeatherDataCard
               windData={windData}
               cityName={cityName}

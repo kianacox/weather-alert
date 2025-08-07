@@ -34,6 +34,14 @@
   margin-top: 2rem;
 }
 
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+  padding: 2rem;
+}
+
 /* Tablet styles */
 @media (min-width: 768px) {
   .container {

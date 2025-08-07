@@ -44,6 +44,16 @@ describe("SearchBar", () => {
   ];
 
   const mockOnSearch = jest.fn((windData, cityName, country) => {});
+  const mockOnLoadingChange = jest.fn((isLoading) => {});
+
+  const renderSearchBar = () => {
+    return render(
+      <SearchBar
+        onSearch={mockOnSearch}
+        onLoadingChange={mockOnLoadingChange}
+      />
+    );
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -55,7 +65,12 @@ describe("SearchBar", () => {
 
   describe("Initial Rendering", () => {
     it("renders the search input with correct label", async () => {
-      render(<SearchBar onSearch={mockOnSearch} />);
+      render(
+        <SearchBar
+          onSearch={mockOnSearch}
+          onLoadingChange={mockOnLoadingChange}
+        />
+      );
 
       expect(
         screen.getByRole("combobox", { name: /search for a city/i })
@@ -66,7 +81,7 @@ describe("SearchBar", () => {
     });
 
     it("renders the search button", async () => {
-      render(<SearchBar onSearch={mockOnSearch} />);
+      renderSearchBar();
 
       const searchButton = screen.getByRole("button", {
         name: /search for wind data/i,
@@ -76,7 +91,7 @@ describe("SearchBar", () => {
     });
 
     it("does not show dropdown initially", async () => {
-      render(<SearchBar onSearch={mockOnSearch} />);
+      renderSearchBar();
 
       // Downshift always renders the listbox, but it's empty initially
       const listbox = screen.getByRole("listbox");
@@ -88,7 +103,7 @@ describe("SearchBar", () => {
   describe("Input Validation", () => {
     it("only allows letters and spaces in input", async () => {
       const user = userEvent.setup();
-      render(<SearchBar onSearch={mockOnSearch} />);
+      renderSearchBar();
 
       const input = screen.getByRole("combobox");
 
@@ -99,7 +114,7 @@ describe("SearchBar", () => {
 
     it("filters out numbers and special characters", async () => {
       const user = userEvent.setup();
-      render(<SearchBar onSearch={mockOnSearch} />);
+      renderSearchBar();
 
       const input = screen.getByRole("combobox");
 
@@ -112,7 +127,7 @@ describe("SearchBar", () => {
   describe("Dropdown Behavior", () => {
     it("shows dropdown after typing 3 characters", async () => {
       const user = userEvent.setup();
-      render(<SearchBar onSearch={mockOnSearch} />);
+      renderSearchBar();
 
       const input = screen.getByRole("combobox");
       await user.type(input, "New");
@@ -124,7 +139,7 @@ describe("SearchBar", () => {
 
     it("does not show dropdown with less than 3 characters", async () => {
       const user = userEvent.setup();
-      render(<SearchBar onSearch={mockOnSearch} />);
+      renderSearchBar();
 
       const input = screen.getByRole("combobox");
       await user.type(input, "Ne");
@@ -135,7 +150,7 @@ describe("SearchBar", () => {
 
     it("filters cities based on partial match", async () => {
       const user = userEvent.setup();
-      render(<SearchBar onSearch={mockOnSearch} />);
+      renderSearchBar();
 
       const input = screen.getByRole("combobox");
       await user.type(input, "New");
@@ -149,7 +164,7 @@ describe("SearchBar", () => {
 
     it('shows "No results found" when no matches', async () => {
       const user = userEvent.setup();
-      render(<SearchBar onSearch={mockOnSearch} />);
+      renderSearchBar();
 
       const input = screen.getByRole("combobox");
       await user.type(input, "Zzz");
@@ -161,7 +176,7 @@ describe("SearchBar", () => {
 
     it("case insensitive search", async () => {
       const user = userEvent.setup();
-      render(<SearchBar onSearch={mockOnSearch} />);
+      renderSearchBar();
 
       const input = screen.getByRole("combobox");
       await user.type(input, "london");
@@ -175,7 +190,7 @@ describe("SearchBar", () => {
   describe("City Selection", () => {
     it("allows selecting a city from dropdown", async () => {
       const user = userEvent.setup();
-      render(<SearchBar onSearch={mockOnSearch} />);
+      renderSearchBar();
 
       const input = screen.getByRole("combobox");
       await user.type(input, "London");
@@ -191,7 +206,7 @@ describe("SearchBar", () => {
 
     it("enables search button after city selection", async () => {
       const user = userEvent.setup();
-      render(<SearchBar onSearch={mockOnSearch} />);
+      renderSearchBar();
 
       const input = screen.getByRole("combobox");
       const searchButton = screen.getByRole("button", {

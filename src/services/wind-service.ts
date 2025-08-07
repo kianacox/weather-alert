@@ -1,3 +1,4 @@
+// Local imports
 import { WindData, WindDataParams } from "./types";
 import { API_ENDPOINT } from "./consts";
 import { apiGet } from "./client";
@@ -35,5 +36,5 @@ export const getWindData = async (
 
   validateCoordinates(latitude, longitude);
 
-  return apiGet<WindData>(API_ENDPOINT, { latitude, longitude });
+  return apiGet<WindData>(API_ENDPOINT, { lat: latitude, lon: longitude });
 };

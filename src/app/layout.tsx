@@ -1,5 +1,8 @@
+// Next.js imports
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+
+// Local imports
 import "./globals.css";
 
 const geistSans = Geist({

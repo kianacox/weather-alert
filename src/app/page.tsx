@@ -1,4 +1,7 @@
+// Next.js imports
 import Image from "next/image";
+
+// Local imports
 import styles from "./page.module.css";
 
 export default function Home() {

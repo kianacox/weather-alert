@@ -1,4 +1,7 @@
+// Third-party library imports
 import axios, { AxiosResponse } from "axios";
+
+// Local imports
 import { API_BASE_URL } from "./consts";
 
 const apiClient = axios.create({

@@ -142,7 +142,7 @@ describe("Home Page", () => {
     it("renders the main title", () => {
       render(<Home />);
 
-      expect(screen.getByText("WindyDays")).toBeInTheDocument();
+      expect(screen.getByText("Welcome to WindyDays")).toBeInTheDocument();
     });
 
     it("renders the subtitle", () => {

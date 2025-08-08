@@ -41,7 +41,7 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <main className={styles.main}>
-        <h1 className={styles.title}>WindyDays</h1>
+        <h1 className={styles.title}>Welcome to WindyDays</h1>
 
         <p className={styles.subtitle}>
           Discover wind conditions around the world. Search for any location to

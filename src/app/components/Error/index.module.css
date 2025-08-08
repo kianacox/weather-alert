@@ -1,0 +1,71 @@
+.errorContainer {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.errorContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.errorIcon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.errorMessage {
+  color: #dc2626;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Tablet styles */
+@media (min-width: 768px) {
+  .errorContainer {
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+    border-radius: 10px;
+  }
+
+  .errorContent {
+    gap: 1rem;
+  }
+
+  .errorIcon {
+    font-size: 1.5rem;
+  }
+
+  .errorMessage {
+    font-size: 1rem;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+  .errorContainer {
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border-radius: 12px;
+  }
+
+  .errorContent {
+    gap: 1.25rem;
+  }
+
+  .errorIcon {
+    font-size: 1.75rem;
+  }
+
+  .errorMessage {
+    font-size: 1.125rem;
+  }
+} 

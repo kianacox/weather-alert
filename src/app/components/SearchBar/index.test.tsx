@@ -45,12 +45,14 @@ describe("SearchBar", () => {
 
   const mockOnSearch = jest.fn((windData, cityName, country) => {});
   const mockOnLoadingChange = jest.fn((isLoading) => {});
+  const mockOnError = jest.fn((errorMessage) => {});
 
   const renderSearchBar = () => {
     return render(
       <SearchBar
         onSearch={mockOnSearch}
         onLoadingChange={mockOnLoadingChange}
+        onError={mockOnError}
       />
     );
   };
@@ -69,6 +71,7 @@ describe("SearchBar", () => {
         <SearchBar
           onSearch={mockOnSearch}
           onLoadingChange={mockOnLoadingChange}
+          onError={mockOnError}
         />
       );
 
@@ -433,6 +436,120 @@ describe("SearchBar", () => {
       });
       // Focus might not work as expected in test environment, so we'll just verify the button exists
       expect(searchButton).toBeInTheDocument();
+    });
+  });
+
+  describe("Error Handling", () => {
+    it("calls onError when API call fails", async () => {
+      const user = userEvent.setup();
+      const apiError = new Error("Network request failed");
+      mockGetWindData.mockRejectedValue(apiError);
+
+      renderSearchBar();
+
+      const input = screen.getByRole("combobox");
+      await user.type(input, "London");
+
+      await waitFor(() => {
+        expect(screen.getByText("London, GB")).toBeInTheDocument();
+      });
+
+      const londonOption = screen.getByText("London, GB");
+      await user.click(londonOption);
+
+      const searchButton = screen.getByRole("button", {
+        name: /search for wind data/i,
+      });
+      await user.click(searchButton);
+
+      await waitFor(() => {
+        expect(mockOnError).toHaveBeenCalledWith("Network request failed");
+      });
+    });
+
+    it("calls onError with default message when error has no message", async () => {
+      const user = userEvent.setup();
+      const apiError = new Error();
+      mockGetWindData.mockRejectedValue(apiError);
+
+      renderSearchBar();
+
+      const input = screen.getByRole("combobox");
+      await user.type(input, "London");
+
+      await waitFor(() => {
+        expect(screen.getByText("London, GB")).toBeInTheDocument();
+      });
+
+      const londonOption = screen.getByText("London, GB");
+      await user.click(londonOption);
+
+      const searchButton = screen.getByRole("button", {
+        name: /search for wind data/i,
+      });
+      await user.click(searchButton);
+
+      await waitFor(() => {
+        expect(mockOnError).toHaveBeenCalledWith("Failed to fetch wind data");
+      });
+    });
+
+    it("calls onError when non-Error object is thrown", async () => {
+      const user = userEvent.setup();
+      mockGetWindData.mockRejectedValue("String error");
+
+      renderSearchBar();
+
+      const input = screen.getByRole("combobox");
+      await user.type(input, "London");
+
+      await waitFor(() => {
+        expect(screen.getByText("London, GB")).toBeInTheDocument();
+      });
+
+      const londonOption = screen.getByText("London, GB");
+      await user.click(londonOption);
+
+      const searchButton = screen.getByRole("button", {
+        name: /search for wind data/i,
+      });
+      await user.click(searchButton);
+
+      await waitFor(() => {
+        expect(mockOnError).toHaveBeenCalledWith("Failed to fetch wind data");
+      });
+    });
+
+    it("does not call onError when API call succeeds", async () => {
+      const user = userEvent.setup();
+      const mockWindData = {
+        windSpeed: 5.2,
+        windDirection: 180,
+        timestamp: 1234567890,
+      };
+      mockGetWindData.mockResolvedValue(mockWindData);
+
+      renderSearchBar();
+
+      const input = screen.getByRole("combobox");
+      await user.type(input, "London");
+
+      await waitFor(() => {
+        expect(screen.getByText("London, GB")).toBeInTheDocument();
+      });
+
+      const londonOption = screen.getByText("London, GB");
+      await user.click(londonOption);
+
+      const searchButton = screen.getByRole("button", {
+        name: /search for wind data/i,
+      });
+      await user.click(searchButton);
+
+      await waitFor(() => {
+        expect(mockOnSearch).toHaveBeenCalledWith(mockWindData, "London", "GB");
+        expect(mockOnError).not.toHaveBeenCalled();
+      });
     });
   });
 });

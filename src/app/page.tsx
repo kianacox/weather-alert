@@ -7,6 +7,7 @@ import { useState } from "react";
 import SearchBar from "@/app/components/SearchBar";
 import WeatherDataCard from "@/app/components/WeatherDataCard";
 import Loading from "@/app/components/Loading";
+import Error from "@/app/components/Error";
 import styles from "./page.module.css";
 import { WindData } from "@/services/types";
 
@@ -15,6 +16,7 @@ export default function Home() {
   const [cityName, setCityName] = useState<string>("");
   const [country, setCountry] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleSearchResult = (
     windData: WindData,
@@ -24,10 +26,16 @@ export default function Home() {
     setWindData(windData);
     setCityName(cityName);
     setCountry(country);
+    setErrorMessage(""); // Clear any previous errors
   };
 
   const handleLoadingChange = (loading: boolean) => {
     setIsLoading(loading);
+  };
+
+  const handleError = (errorMessage: string) => {
+    setErrorMessage(errorMessage);
+    setWindData(null); // Clear any previous data
   };
 
   return (
@@ -44,6 +52,7 @@ export default function Home() {
           <SearchBar
             onSearch={handleSearchResult}
             onLoadingChange={handleLoadingChange}
+            onError={handleError}
           />
 
           {isLoading && (
@@ -52,7 +61,9 @@ export default function Home() {
             </div>
           )}
 
-          {windData && !isLoading && (
+          {errorMessage && !isLoading && <Error message={errorMessage} />}
+
+          {windData && !isLoading && !errorMessage && (
             <WeatherDataCard
               windData={windData}
               cityName={cityName}

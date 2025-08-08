@@ -9,7 +9,6 @@ import { FaSearch } from "react-icons/fa";
 import { getWindData } from "@/services/wind-service";
 import styles from "./index.module.css";
 import { WindData } from "@/services/types";
-import Loading from "@/app/components/Loading";
 
 interface City {
   city: string;
@@ -21,9 +20,14 @@ interface City {
 interface SearchBarProps {
   onSearch: (windData: WindData, cityName: string, country: string) => void;
   onLoadingChange?: (isLoading: boolean) => void;
+  onError?: (errorMessage: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onLoadingChange }) => {
+const SearchBar: React.FC<SearchBarProps> = ({
+  onSearch,
+  onLoadingChange,
+  onError,
+}) => {
   const [cities, setCities] = useState<City[]>([]);
   const [filteredCities, setFilteredCities] = useState<City[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,6 +74,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onLoadingChange }) => {
       onSearch(windData, selectedItem.city, selectedItem.country);
     } catch (error) {
       console.error("Failed to fetch wind data:", error);
+      const errorMessage =
+        error instanceof Error && error.message
+          ? error.message
+          : "Failed to fetch wind data";
+      onError?.(errorMessage);
     } finally {
       setIsLoading(false);
       onLoadingChange?.(false);

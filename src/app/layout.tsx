@@ -1,10 +1,13 @@
 // Next.js imports
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Suspense, lazy } from "react";
 
 // Local imports
-import Navigation from "@/app/components/Navigation";
 import "./globals.css";
+
+// Lazy load Navigation component
+const Navigation = lazy(() => import("@/app/components/Navigation"));
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +33,9 @@ const RootLayout = ({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Navigation />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Navigation />
+        </Suspense>
         <main>{children}</main>
       </body>
     </html>

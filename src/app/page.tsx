@@ -1,7 +1,7 @@
 "use client";
 
 // React imports
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 // Local imports
 import SearchBar from "@/app/components/SearchBar";
@@ -21,29 +21,33 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const handleSearchResult = (
-    windData: WindData,
-    cityName: string,
-    country: string,
-    latitude: number,
-    longitude: number
-  ) => {
-    setWindData(windData);
-    setCityName(cityName);
-    setCountry(country);
-    setLatitude(latitude);
-    setLongitude(longitude);
-    setErrorMessage(""); // Clear any previous errors
-  };
+  // Memoized handlers to prevent unnecessary re-renders
+  const handleSearchResult = useCallback(
+    (
+      windData: WindData,
+      cityName: string,
+      country: string,
+      latitude: number,
+      longitude: number
+    ) => {
+      setWindData(windData);
+      setCityName(cityName);
+      setCountry(country);
+      setLatitude(latitude);
+      setLongitude(longitude);
+      setErrorMessage(""); // Clear any previous errors
+    },
+    []
+  );
 
-  const handleLoadingChange = (loading: boolean) => {
+  const handleLoadingChange = useCallback((loading: boolean) => {
     setIsLoading(loading);
-  };
+  }, []);
 
-  const handleError = (errorMessage: string) => {
+  const handleError = useCallback((errorMessage: string) => {
     setErrorMessage(errorMessage);
     setWindData(null); // Clear any previous data
-  };
+  }, []);
 
   return (
     <div className={styles.container}>

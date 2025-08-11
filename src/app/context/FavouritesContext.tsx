@@ -1,7 +1,7 @@
 "use client";
 
 // React imports
-import React, { createContext, ReactNode } from "react";
+import React, { createContext, ReactNode, useMemo } from "react";
 
 // Local imports
 import { FavouritesContextType } from "@/app/types/favourites";
@@ -26,13 +26,17 @@ export const FavouritesProvider: React.FC<FavouritesProviderProps> = ({
     clearFavourites,
   } = useFavouritesStorage();
 
-  const value: FavouritesContextType = {
-    favourites,
-    addFavourite,
-    removeFavourite,
-    isFavourited,
-    clearFavourites,
-  };
+  // Memoize the context value to prevent unnecessary re-renders
+  const value: FavouritesContextType = useMemo(
+    () => ({
+      favourites,
+      addFavourite,
+      removeFavourite,
+      isFavourited,
+      clearFavourites,
+    }),
+    [favourites, addFavourite, removeFavourite, isFavourited, clearFavourites]
+  );
 
   return (
     <FavouritesContext.Provider value={value}>

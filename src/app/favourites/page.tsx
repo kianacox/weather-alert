@@ -2,9 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useFavourites } from "@/hooks";
-import WeatherDataCard from "@/app/components/WeatherDataCard";
+import { Suspense, lazy } from "react";
 import { FavouritesProvider } from "@/app/context/FavouritesContext";
 import styles from "./page.module.css";
+
+// Lazy load WeatherDataCard component
+const WeatherDataCard = lazy(() => import("@/app/components/WeatherDataCard"));
 
 const FavouritesContent = () => {
   const { favourites } = useFavourites();
@@ -36,13 +39,15 @@ const FavouritesContent = () => {
             key={`${favourite.cityName}-${favourite.country}`}
             className={styles.favouriteItem}
           >
-            <WeatherDataCard
-              windData={favourite.windData}
-              cityName={favourite.cityName}
-              country={favourite.country}
-              latitude={favourite.latitude}
-              longitude={favourite.longitude}
-            />
+            <Suspense fallback={<div>Loading weather data...</div>}>
+              <WeatherDataCard
+                windData={favourite.windData}
+                cityName={favourite.cityName}
+                country={favourite.country}
+                latitude={favourite.latitude}
+                longitude={favourite.longitude}
+              />
+            </Suspense>
           </div>
         ))}
       </div>

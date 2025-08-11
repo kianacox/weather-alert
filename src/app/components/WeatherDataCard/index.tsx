@@ -7,25 +7,42 @@ import {
   formatWindDirection,
   getBeaufortScale,
 } from "@/app/utils/weather-helper";
+import FavouritesButton from "@/app/components/FavouritesButton";
 import styles from "./index.module.css";
 
 interface WeatherDataCardProps {
   windData: WindData;
   cityName: string;
   country: string;
+  latitude: number;
+  longitude: number;
 }
 
 const WeatherDataCard: React.FC<WeatherDataCardProps> = ({
   windData,
   cityName,
   country,
+  latitude,
+  longitude,
 }) => {
   return (
     <div className={styles.card}>
-      <h3 className={styles.cardTitle}>Wind Information</h3>
-      <h4 className={styles.locationTitle}>
-        {cityName}, {country}
-      </h4>
+      <div className={styles.cardHeader}>
+        <div>
+          <h3 className={styles.cardTitle}>Wind Information</h3>
+          <h4 className={styles.locationTitle}>
+            {cityName}, {country}
+          </h4>
+        </div>
+        <FavouritesButton
+          cityName={cityName}
+          country={country}
+          latitude={latitude}
+          longitude={longitude}
+          windData={windData}
+          size="large"
+        />
+      </div>
 
       <div className={styles.dataGrid}>
         <div className={styles.dataItem}>

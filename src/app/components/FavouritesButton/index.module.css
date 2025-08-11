@@ -1,0 +1,122 @@
+.favouritesButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.favouritesButton:hover {
+  transform: scale(1.1);
+}
+
+.favouritesButton:active {
+  transform: scale(0.95);
+}
+
+.filledHeart {
+  color: #ef4444;
+  transition: color 0.2s ease;
+}
+
+.emptyHeart {
+  color: #6b7280;
+  transition: color 0.2s ease;
+}
+
+.favouritesButton:hover .emptyHeart {
+  color: #ef4444;
+}
+
+/* Size variants */
+.small {
+  padding: 0.375rem;
+}
+
+.small .filledHeart,
+.small .emptyHeart {
+  font-size: 0.875rem;
+}
+
+.medium {
+  padding: 0.5rem;
+}
+
+.medium .filledHeart,
+.medium .emptyHeart {
+  font-size: 1rem;
+}
+
+.large {
+  padding: 0.75rem;
+}
+
+.large .filledHeart,
+.large .emptyHeart {
+  font-size: 1.25rem;
+}
+
+/* Tablet styles */
+@media (min-width: 768px) {
+  .small {
+    padding: 0.5rem;
+  }
+
+  .small .filledHeart,
+  .small .emptyHeart {
+    font-size: 1rem;
+  }
+
+  .medium {
+    padding: 0.625rem;
+  }
+
+  .medium .filledHeart,
+  .medium .emptyHeart {
+    font-size: 1.125rem;
+  }
+
+  .large {
+    padding: 1rem;
+  }
+
+  .large .filledHeart,
+  .large .emptyHeart {
+    font-size: 1.5rem;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+  .small {
+    padding: 0.625rem;
+  }
+
+  .small .filledHeart,
+  .small .emptyHeart {
+    font-size: 1.125rem;
+  }
+
+  .medium {
+    padding: 0.75rem;
+  }
+
+  .medium .filledHeart,
+  .medium .emptyHeart {
+    font-size: 1.25rem;
+  }
+
+  .large {
+    padding: 1.25rem;
+  }
+
+  .large .filledHeart,
+  .large .emptyHeart {
+    font-size: 1.75rem;
+  }
+} 

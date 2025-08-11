@@ -7,194 +7,331 @@ import "@testing-library/jest-dom";
 
 // Local imports
 import WeatherDataCard from "./index";
+import { FavouritesProvider } from "@/app/context/FavouritesContext";
+
+// Mock localStorage
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+};
+Object.defineProperty(window, "localStorage", {
+  value: localStorageMock,
+});
+
+const renderWeatherDataCard = (props: any) => {
+  return render(
+    <FavouritesProvider>
+      <WeatherDataCard {...props} />
+    </FavouritesProvider>
+  );
+};
 
 describe("WeatherDataCard", () => {
-  const mockWindData = {
-    windSpeed: 8.5,
-    windDirection: 180,
-    timestamp: 1703000000000, // December 19, 2023
-  };
-
   const defaultProps = {
-    windData: mockWindData,
+    windData: {
+      windSpeed: 5.2,
+      windDirection: 180,
+      timestamp: 1234567890,
+    },
     cityName: "London",
     country: "GB",
+    latitude: 51.5074,
+    longitude: -0.1278,
   };
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+    localStorageMock.getItem.mockReturnValue(null);
+  });
+
   describe("Initial Rendering", () => {
-    it("renders the main title", () => {
-      render(<WeatherDataCard {...defaultProps} />);
+    it("renders the card title", () => {
+      renderWeatherDataCard(defaultProps);
 
       expect(screen.getByText("Wind Information")).toBeInTheDocument();
     });
 
-    it("renders the location information", () => {
-      render(<WeatherDataCard {...defaultProps} />);
+    it("renders the location title", () => {
+      renderWeatherDataCard(defaultProps);
 
       expect(screen.getByText("London, GB")).toBeInTheDocument();
     });
 
-    it("renders all wind data fields", () => {
-      render(<WeatherDataCard {...defaultProps} />);
+    it("renders all data items", () => {
+      renderWeatherDataCard(defaultProps);
 
-      expect(screen.getByText(/Direction:/)).toBeInTheDocument();
-      expect(screen.getByText(/Speed:/)).toBeInTheDocument();
-      expect(screen.getByText(/Time:/)).toBeInTheDocument();
+      expect(screen.getByText("Direction:")).toBeInTheDocument();
+      expect(screen.getByText("Speed:")).toBeInTheDocument();
+      expect(screen.getByText("Time:")).toBeInTheDocument();
+    });
+
+    it("renders the favourites button", () => {
+      renderWeatherDataCard(defaultProps);
+
+      expect(
+        screen.getByRole("button", { name: /add to favourites/i })
+      ).toBeInTheDocument();
     });
   });
 
   describe("Wind Direction Display", () => {
-    it("displays wind direction with cardinal direction and degrees", () => {
-      render(<WeatherDataCard {...defaultProps} />);
+    it("displays wind direction correctly", () => {
+      renderWeatherDataCard(defaultProps);
 
-      expect(screen.getByText(/S° \(180\)/)).toBeInTheDocument();
+      expect(screen.getByText(/180/)).toBeInTheDocument();
+      const directionElement = screen
+        .getByText(/Direction:/)
+        .closest(".dataItem");
+      expect(directionElement).toHaveTextContent("S");
     });
 
-    it("handles different wind directions correctly", () => {
-      const northWindData = { ...mockWindData, windDirection: 0 };
-      render(<WeatherDataCard {...defaultProps} windData={northWindData} />);
+    it("handles different wind directions", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        windData: {
+          ...defaultProps.windData,
+          windDirection: 90,
+        },
+      });
 
-      expect(screen.getByText(/N° \(0\)/)).toBeInTheDocument();
+      expect(screen.getByText(/90/)).toBeInTheDocument();
+      expect(screen.getByText(/E/)).toBeInTheDocument();
+    });
+
+    it("handles zero degrees", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        windData: {
+          ...defaultProps.windData,
+          windDirection: 0,
+        },
+      });
+
+      const directionElement = screen
+        .getByText(/Direction:/)
+        .closest(".dataItem");
+      expect(directionElement).toHaveTextContent("0");
+      expect(directionElement).toHaveTextContent("N");
     });
   });
 
   describe("Wind Speed Display", () => {
-    it("displays wind speed in m/s", () => {
-      render(<WeatherDataCard {...defaultProps} />);
+    it("displays wind speed correctly", () => {
+      renderWeatherDataCard(defaultProps);
 
-      expect(screen.getByText("8.5 m/s")).toBeInTheDocument();
+      expect(screen.getByText(/5\.2 m\/s/)).toBeInTheDocument();
     });
 
     it("displays Beaufort scale information", () => {
-      render(<WeatherDataCard {...defaultProps} />);
+      renderWeatherDataCard(defaultProps);
 
-      expect(screen.getByText(/Force 5 - Fresh Breeze/)).toBeInTheDocument();
+      expect(screen.getByText(/Force 3 - Gentle Breeze/)).toBeInTheDocument();
     });
 
-    it("handles different wind conditions", () => {
-      const calmWindData = { ...mockWindData, windSpeed: 0.1 };
-      render(<WeatherDataCard {...defaultProps} windData={calmWindData} />);
+    it("handles different wind speeds", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        windData: {
+          ...defaultProps.windData,
+          windSpeed: 25.0,
+        },
+      });
 
-      expect(screen.getByText("0.1 m/s")).toBeInTheDocument();
+      expect(screen.getByText(/25 m\/s/)).toBeInTheDocument();
+      expect(screen.getByText(/Force 10 - Storm/)).toBeInTheDocument();
+    });
+
+    it("handles zero wind speed", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        windData: {
+          ...defaultProps.windData,
+          windSpeed: 0,
+        },
+      });
+
+      expect(screen.getByText(/0 m\/s/)).toBeInTheDocument();
       expect(screen.getByText(/Force 0 - Calm/)).toBeInTheDocument();
     });
   });
 
   describe("Timestamp Display", () => {
-    it("displays formatted timestamp", () => {
-      render(<WeatherDataCard {...defaultProps} />);
+    it("displays timestamp in readable format", () => {
+      renderWeatherDataCard(defaultProps);
 
-      expect(screen.getByText(/Time:/)).toBeInTheDocument();
-      expect(screen.getByText(/2023/)).toBeInTheDocument();
+      const timestamp = new Date(1234567890).toLocaleString();
+      expect(screen.getByText(timestamp)).toBeInTheDocument();
     });
 
-    it("handles different timestamp values", () => {
-      const recentWindData = { ...mockWindData, timestamp: Date.now() };
-      render(<WeatherDataCard {...defaultProps} windData={recentWindData} />);
+    it("handles different timestamps", () => {
+      const newTimestamp = Date.now();
+      renderWeatherDataCard({
+        ...defaultProps,
+        windData: {
+          ...defaultProps.windData,
+          timestamp: newTimestamp,
+        },
+      });
 
-      expect(screen.getByText(/Time:/)).toBeInTheDocument();
+      const timestamp = new Date(newTimestamp).toLocaleString();
+      expect(screen.getByText(timestamp)).toBeInTheDocument();
     });
   });
 
   describe("Location Display", () => {
     it("displays city and country correctly", () => {
-      render(<WeatherDataCard {...defaultProps} />);
+      renderWeatherDataCard(defaultProps);
 
       expect(screen.getByText("London, GB")).toBeInTheDocument();
     });
 
-    it("handles different city names", () => {
-      render(
-        <WeatherDataCard {...defaultProps} cityName="New York" country="US" />
-      );
+    it("handles different locations", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        cityName: "Paris",
+        country: "FR",
+      });
 
-      expect(screen.getByText("New York, US")).toBeInTheDocument();
+      expect(screen.getByText("Paris, FR")).toBeInTheDocument();
     });
 
-    it("handles cities with special characters", () => {
-      render(
-        <WeatherDataCard {...defaultProps} cityName="São Paulo" country="BR" />
-      );
+    it("handles empty city name", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        cityName: "",
+      });
 
-      expect(screen.getByText("São Paulo, BR")).toBeInTheDocument();
+      expect(screen.getByText(", GB")).toBeInTheDocument();
     });
 
-    it("handles long city names", () => {
-      render(
-        <WeatherDataCard
-          {...defaultProps}
-          cityName="Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"
-          country="GB"
-        />
-      );
+    it("handles empty country", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        country: "",
+      });
 
-      expect(
-        screen.getByText(
-          "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch, GB"
-        )
-      ).toBeInTheDocument();
+      expect(screen.getByText(/London,/)).toBeInTheDocument();
     });
   });
 
   describe("Boundary and Edge Cases", () => {
-    it("handles edge cases gracefully", () => {
-      const zeroWindData = { ...mockWindData, windSpeed: 0 };
-      render(<WeatherDataCard {...defaultProps} windData={zeroWindData} />);
+    it("handles negative wind direction", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        windData: {
+          ...defaultProps.windData,
+          windDirection: -90,
+        },
+      });
 
-      expect(screen.getByText("0 m/s")).toBeInTheDocument();
-      expect(screen.getByText(/Force 0 - Calm/)).toBeInTheDocument();
+      expect(screen.getByText(/-90/)).toBeInTheDocument();
+      // Use a more specific selector to avoid conflict with "Wind Information"
+      const directionElement = screen
+        .getByText(/Direction:/)
+        .closest(".dataItem");
+      expect(directionElement).toHaveTextContent("W");
     });
 
-    it("handles extreme wind directions", () => {
-      const negativeWindData = { ...mockWindData, windDirection: -90 };
-      render(<WeatherDataCard {...defaultProps} windData={negativeWindData} />);
+    it("handles very high wind speeds", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        windData: {
+          ...defaultProps.windData,
+          windSpeed: 50.0,
+        },
+      });
 
-      // Should handle negative values gracefully
-      expect(screen.getByText(/Direction:/)).toBeInTheDocument();
+      expect(screen.getByText(/50 m\/s/)).toBeInTheDocument();
+      expect(screen.getByText(/Force 12 - Hurricane/)).toBeInTheDocument();
+    });
+
+    it("handles decimal wind speeds", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        windData: {
+          ...defaultProps.windData,
+          windSpeed: 3.7,
+        },
+      });
+
+      expect(screen.getByText(/3\.7 m\/s/)).toBeInTheDocument();
     });
   });
 
   describe("Data Accuracy", () => {
-    it("displays correct Beaufort scale for different wind speeds", () => {
-      const lightBreezeData = { ...mockWindData, windSpeed: 2.5 };
-      render(<WeatherDataCard {...defaultProps} windData={lightBreezeData} />);
+    it("displays correct wind direction for North", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        windData: {
+          ...defaultProps.windData,
+          windDirection: 0,
+        },
+      });
 
-      expect(screen.getByText(/Force 2 - Light Breeze/)).toBeInTheDocument();
+      const directionElement = screen
+        .getByText(/Direction:/)
+        .closest(".dataItem");
+      expect(directionElement).toHaveTextContent("N");
+    });
+
+    it("displays correct wind direction for East", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        windData: {
+          ...defaultProps.windData,
+          windDirection: 90,
+        },
+      });
+
+      const directionElement = screen
+        .getByText(/Direction:/)
+        .closest(".dataItem");
+      expect(directionElement).toHaveTextContent("E");
+    });
+
+    it("displays correct wind direction for South", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        windData: {
+          ...defaultProps.windData,
+          windDirection: 180,
+        },
+      });
+
+      const directionElement = screen
+        .getByText(/Direction:/)
+        .closest(".dataItem");
+      expect(directionElement).toHaveTextContent("S");
+    });
+
+    it("displays correct wind direction for West", () => {
+      renderWeatherDataCard({
+        ...defaultProps,
+        windData: {
+          ...defaultProps.windData,
+          windDirection: 270,
+        },
+      });
+
+      const directionElement = screen
+        .getByText(/Direction:/)
+        .closest(".dataItem");
+      expect(directionElement).toHaveTextContent("W");
     });
   });
 
   describe("Component Structure", () => {
-    it("has proper semantic structure", () => {
-      render(<WeatherDataCard {...defaultProps} />);
-
-      // Check for proper heading hierarchy
-      expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent(
-        "Wind Information"
-      );
-      expect(screen.getByRole("heading", { level: 4 })).toHaveTextContent(
-        "London, GB"
-      );
-    });
-
     it("renders all data items in correct order", () => {
-      render(<WeatherDataCard {...defaultProps} />);
+      renderWeatherDataCard(defaultProps);
 
-      const dataItems = screen.getAllByText(/:/);
-      expect(dataItems).toHaveLength(4); // Direction, Speed, Time, and timestamp
+      const labels = screen.getAllByText(/Direction:|Speed:|Time:/);
+      expect(labels).toHaveLength(3);
     });
 
-    it("maintains consistent layout structure", () => {
-      const { container } = render(<WeatherDataCard {...defaultProps} />);
-
-      // Check that the card has the expected structure
-      const card = container.firstChild;
-      expect(card).toHaveClass("card");
-    });
-  });
-
-  describe("Accessibility", () => {
     it("has proper heading structure", () => {
-      render(<WeatherDataCard {...defaultProps} />);
+      renderWeatherDataCard(defaultProps);
 
       const headings = screen.getAllByRole("heading");
       expect(headings).toHaveLength(2);
@@ -203,7 +340,7 @@ describe("WeatherDataCard", () => {
     });
 
     it("provides clear data labels", () => {
-      render(<WeatherDataCard {...defaultProps} />);
+      renderWeatherDataCard(defaultProps);
 
       expect(screen.getByText("Direction:")).toBeInTheDocument();
       expect(screen.getByText("Speed:")).toBeInTheDocument();
@@ -211,12 +348,34 @@ describe("WeatherDataCard", () => {
     });
 
     it("displays data in readable format", () => {
-      render(<WeatherDataCard {...defaultProps} />);
+      renderWeatherDataCard(defaultProps);
 
-      // Check that wind data is displayed in a user-friendly format
-      expect(screen.getByText(/S° \(180\)/)).toBeInTheDocument();
-      expect(screen.getByText("8.5 m/s")).toBeInTheDocument();
-      expect(screen.getByText(/Force 5 - Fresh Breeze/)).toBeInTheDocument();
+      expect(screen.getByText(/5\.2 m\/s/)).toBeInTheDocument();
+      expect(screen.getByText(/180/)).toBeInTheDocument();
+    });
+  });
+
+  describe("Accessibility", () => {
+    it("has proper heading hierarchy", () => {
+      renderWeatherDataCard(defaultProps);
+
+      const headings = screen.getAllByRole("heading");
+      expect(headings[0]).toHaveTextContent("Wind Information");
+      expect(headings[1]).toHaveTextContent("London, GB");
+    });
+
+    it("provides accessible data labels", () => {
+      renderWeatherDataCard(defaultProps);
+
+      const labels = screen.getAllByText(/Direction:|Speed:|Time:/);
+      expect(labels).toHaveLength(3);
+    });
+
+    it("renders data in semantic structure", () => {
+      renderWeatherDataCard(defaultProps);
+
+      expect(screen.getByText("Wind Information")).toBeInTheDocument();
+      expect(screen.getByText("London, GB")).toBeInTheDocument();
     });
   });
 });

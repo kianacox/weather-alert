@@ -9,11 +9,20 @@ import "@testing-library/jest-dom";
 // Local imports
 import Home from "./page";
 import { getWindData } from "../services/wind-service";
+import { FavouritesProvider } from "@/app/context/FavouritesContext";
 
 jest.mock("../services/wind-service");
 const mockGetWindData = getWindData as jest.MockedFunction<typeof getWindData>;
 
 global.fetch = jest.fn();
+
+const renderHome = () => {
+  return render(
+    <FavouritesProvider>
+      <Home />
+    </FavouritesProvider>
+  );
+};
 
 describe("Home Page", () => {
   const mockCities = [
@@ -39,7 +48,7 @@ describe("Home Page", () => {
       const apiError = new Error("Network request failed");
       mockGetWindData.mockRejectedValue(apiError);
 
-      render(<Home />);
+      renderHome();
 
       const input = screen.getByRole("combobox");
       await user.type(input, "London");
@@ -75,7 +84,7 @@ describe("Home Page", () => {
         new Error("Network request failed")
       );
 
-      render(<Home />);
+      renderHome();
 
       const input = screen.getByRole("combobox");
       await user.type(input, "London");
@@ -113,7 +122,7 @@ describe("Home Page", () => {
       const apiError = new Error();
       mockGetWindData.mockRejectedValue(apiError);
 
-      render(<Home />);
+      renderHome();
 
       const input = screen.getByRole("combobox");
       await user.type(input, "London");
@@ -140,13 +149,13 @@ describe("Home Page", () => {
 
   describe("Component Rendering", () => {
     it("renders the main title", () => {
-      render(<Home />);
+      renderHome();
 
       expect(screen.getByText("Welcome to WindyDays")).toBeInTheDocument();
     });
 
     it("renders the subtitle", () => {
-      render(<Home />);
+      renderHome();
 
       expect(
         screen.getByText(/Discover wind conditions around the world/)
@@ -154,7 +163,7 @@ describe("Home Page", () => {
     });
 
     it("renders the search bar", () => {
-      render(<Home />);
+      renderHome();
 
       expect(
         screen.getByRole("combobox", { name: /search for a city/i })

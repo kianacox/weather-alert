@@ -43,7 +43,9 @@ describe("SearchBar", () => {
     },
   ];
 
-  const mockOnSearch = jest.fn((windData, cityName, country) => {});
+  const mockOnSearch = jest.fn(
+    (windData, cityName, country, latitude, longitude) => {}
+  );
   const mockOnLoadingChange = jest.fn((isLoading) => {});
   const mockOnError = jest.fn((errorMessage) => {});
 
@@ -547,7 +549,13 @@ describe("SearchBar", () => {
       await user.click(searchButton);
 
       await waitFor(() => {
-        expect(mockOnSearch).toHaveBeenCalledWith(mockWindData, "London", "GB");
+        expect(mockOnSearch).toHaveBeenCalledWith(
+          mockWindData,
+          "London",
+          "GB",
+          51.5074,
+          -0.1278
+        );
         expect(mockOnError).not.toHaveBeenCalled();
       });
     });

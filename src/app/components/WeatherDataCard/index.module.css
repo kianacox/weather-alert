@@ -7,20 +7,25 @@
   border: 1px solid #e5e7eb;
 }
 
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
 .cardTitle {
   font-size: 1.25rem;
   font-weight: 600;
   color: #1f2937;
   margin: 0 0 0.5rem 0;
-  text-align: center;
 }
 
 .locationTitle {
   font-size: 1rem;
   font-weight: 500;
   color: #6b7280;
-  margin: 0 0 1rem 0;
-  text-align: center;
+  margin: 0;
 }
 
 .dataGrid {

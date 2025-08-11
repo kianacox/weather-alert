@@ -7,18 +7,18 @@ import { FaSearch } from "react-icons/fa";
 
 // Local imports
 import { getWindData } from "@/services/wind-service";
+import { City } from "@/app/types/cities";
 import styles from "./index.module.css";
 import { WindData } from "@/services/types";
 
-interface City {
-  city: string;
-  country: string;
-  lat: number;
-  lon: number;
-}
-
 interface SearchBarProps {
-  onSearch: (windData: WindData, cityName: string, country: string) => void;
+  onSearch: (
+    windData: WindData,
+    cityName: string,
+    country: string,
+    latitude: number,
+    longitude: number
+  ) => void;
   onLoadingChange?: (isLoading: boolean) => void;
   onError?: (errorMessage: string) => void;
 }
@@ -70,8 +70,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
         longitude: selectedItem.lon,
       });
 
-      console.log("windData", windData);
-      onSearch(windData, selectedItem.city, selectedItem.country);
+      onSearch(
+        windData,
+        selectedItem.city,
+        selectedItem.country,
+        selectedItem.lat,
+        selectedItem.lon
+      );
     } catch (error) {
       console.error("Failed to fetch wind data:", error);
       const errorMessage =

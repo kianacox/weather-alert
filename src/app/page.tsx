@@ -8,6 +8,7 @@ import SearchBar from "@/app/components/SearchBar";
 import WeatherDataCard from "@/app/components/WeatherDataCard";
 import Loading from "@/app/components/Loading";
 import Error from "@/app/components/Error";
+import { FavouritesProvider } from "@/app/context/FavouritesContext";
 import styles from "./page.module.css";
 import { WindData } from "@/services/types";
 
@@ -15,17 +16,23 @@ export default function Home() {
   const [windData, setWindData] = useState<WindData | null>(null);
   const [cityName, setCityName] = useState<string>("");
   const [country, setCountry] = useState<string>("");
+  const [latitude, setLatitude] = useState<number>(0);
+  const [longitude, setLongitude] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleSearchResult = (
     windData: WindData,
     cityName: string,
-    country: string
+    country: string,
+    latitude: number,
+    longitude: number
   ) => {
     setWindData(windData);
     setCityName(cityName);
     setCountry(country);
+    setLatitude(latitude);
+    setLongitude(longitude);
     setErrorMessage(""); // Clear any previous errors
   };
 
@@ -64,11 +71,15 @@ export default function Home() {
           {errorMessage && !isLoading && <Error message={errorMessage} />}
 
           {windData && !isLoading && !errorMessage && (
-            <WeatherDataCard
-              windData={windData}
-              cityName={cityName}
-              country={country}
-            />
+            <FavouritesProvider>
+              <WeatherDataCard
+                windData={windData}
+                cityName={cityName}
+                country={country}
+                latitude={latitude}
+                longitude={longitude}
+              />
+            </FavouritesProvider>
           )}
         </div>
       </main>

@@ -3,7 +3,7 @@ import { FavouriteLocation } from "@/app/types/favourites";
 
 const FAVOURITES_STORAGE_KEY = "windyDaysFavourites";
 
-export function useFavouritesStorage() {
+export const useFavouritesStorage = () => {
   const { storedValue: favourites, setValue: setFavourites } = useLocalStorage<
     FavouriteLocation[]
   >({
@@ -57,4 +57,4 @@ export function useFavouritesStorage() {
     isFavourited,
     clearFavourites,
   };
-}
+};

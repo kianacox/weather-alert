@@ -12,7 +12,7 @@ import { FavouritesProvider } from "@/app/context/FavouritesContext";
 import styles from "./page.module.css";
 import { WindData } from "@/services/types";
 
-export default function Home() {
+const Home = () => {
   const [windData, setWindData] = useState<WindData | null>(null);
   const [cityName, setCityName] = useState<string>("");
   const [country, setCountry] = useState<string>("");
@@ -85,4 +85,6 @@ export default function Home() {
       </main>
     </div>
   );
-}
+};
+
+export default Home;

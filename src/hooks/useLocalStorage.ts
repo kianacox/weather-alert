@@ -5,10 +5,10 @@ interface UseLocalStorageOptions {
   key: string;
 }
 
-export function useLocalStorage<T>({
+export const useLocalStorage = <T>({
   key,
   defaultValue,
-}: UseLocalStorageOptions) {
+}: UseLocalStorageOptions) => {
   // Get initial value from localStorage or use default
   const getInitialValue = (): T => {
     try {
@@ -85,4 +85,4 @@ export function useLocalStorage<T>({
     removeValue,
     clearAll,
   };
-}
+};
